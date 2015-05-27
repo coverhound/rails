@@ -15,11 +15,15 @@ module ActiveJob
     class DelayedJobAdapter
       class << self
         def enqueue(job) #:nodoc:
-          Delayed::Job.enqueue(JobWrapper.new(job.serialize), queue: job.queue_name)
+          delayed_job = Delayed::Job.enqueue(JobWrapper.new(job.serialize), queue: job.queue_name)
+          job.provider_job_id = delayed_job.id
+          delayed_job
         end
 
         def enqueue_at(job, timestamp) #:nodoc:
-          Delayed::Job.enqueue(JobWrapper.new(job.serialize), queue: job.queue_name, run_at: Time.at(timestamp))
+          delayed_job = Delayed::Job.enqueue(JobWrapper.new(job.serialize), queue: job.queue_name, run_at: Time.at(timestamp))
+          job.provider_job_id = delayed_job.id
+          delayed_job
         end
       end
 
