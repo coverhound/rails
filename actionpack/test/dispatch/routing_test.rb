@@ -3472,18 +3472,6 @@ class TestRoutingMapper < ActionDispatch::IntegrationTest
     assert_equal '/bar/comments/1', comment_path('1')
   end
 
-  def test_head_fetch_with_mount_on_root
-    draw do
-      get '/home' => 'test#index'
-      mount lambda { |env| [404, {"Content-Type" => "text/html"}, ["testing"]] }, at: '/'
-    end
-    head '/home'
-    assert_response :success
-
-    head '/'
-    assert_response :not_found
-  end
-
 private
 
   def draw(&block)
@@ -4451,6 +4439,19 @@ class TestUrlGenerationErrors < ActionDispatch::IntegrationTest
 
     # Non-optimized url helper
     error = assert_raises(ActionController::UrlGenerationError, message){ product_path(id: nil) }
+    assert_equal message, error.message
+  end
+
+  test "url helpers raise message with mixed parameters when generation fails " do
+    url, missing = { action: 'show', controller: 'products', id: nil, "id"=>"url-tested"}, [:id]
+    message = "No route matches #{url.inspect} missing required keys: #{missing.inspect}"
+
+    # Optimized url helper
+    error = assert_raises(ActionController::UrlGenerationError){ product_path(nil, 'id'=>'url-tested') }
+    assert_equal message, error.message
+
+    # Non-optimized url helper
+    error = assert_raises(ActionController::UrlGenerationError, message){ product_path(id: nil, 'id'=>'url-tested') }
     assert_equal message, error.message
   end
 end

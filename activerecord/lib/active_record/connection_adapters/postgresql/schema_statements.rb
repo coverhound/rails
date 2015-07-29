@@ -418,9 +418,7 @@ module ActiveRecord
           rename_table_indexes(table_name, new_name)
         end
 
-        # Adds a new column to the named table.
-        # See TableDefinition#column for details of the options you can use.
-        def add_column(table_name, column_name, type, options = {})
+        def add_column(table_name, column_name, type, options = {}) #:nodoc:
           clear_cache!
           super
         end
@@ -468,7 +466,7 @@ module ActiveRecord
         end
 
         # Renames a column in a table.
-        def rename_column(table_name, column_name, new_column_name)
+        def rename_column(table_name, column_name, new_column_name) #:nodoc:
           clear_cache!
           execute "ALTER TABLE #{quote_table_name(table_name)} RENAME COLUMN #{quote_column_name(column_name)} TO #{quote_column_name(new_column_name)}"
           rename_column_indexes(table_name, column_name, new_column_name)

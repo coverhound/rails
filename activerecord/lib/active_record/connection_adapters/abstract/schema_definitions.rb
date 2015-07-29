@@ -57,11 +57,11 @@ module ActiveRecord
     end
 
     module TimestampDefaultDeprecation # :nodoc:
-      def emit_warning_if_null_unspecified(options)
+      def emit_warning_if_null_unspecified(sym, options)
         return if options.key?(:null)
 
         ActiveSupport::Deprecation.warn(<<-MSG.squish)
-          `#timestamp` was called without specifying an option for `null`. In Rails 5,
+          `##{sym}` was called without specifying an option for `null`. In Rails 5,
           this behavior will change to `null: false`. You should manually specify
          `null: true` to prevent the behavior of your existing migrations from changing.
         MSG
@@ -256,6 +256,7 @@ module ActiveRecord
       def column(name, type, options = {})
         name = name.to_s
         type = type.to_sym
+        options = options.dup
 
         if @columns_hash[name] && @columns_hash[name].primary_key?
           raise ArgumentError, "you can't redefine the primary key column '#{name}'. To define a custom primary key, pass { id: false } to create_table."
@@ -297,23 +298,17 @@ module ActiveRecord
       #   t.timestamps null: false
       def timestamps(*args)
         options = args.extract_options!
-        emit_warning_if_null_unspecified(options)
+        emit_warning_if_null_unspecified(:timestamps, options)
         column(:created_at, :datetime, options)
         column(:updated_at, :datetime, options)
       end
 
-      # Adds a reference. Optionally adds a +type+ column, if
-      # <tt>:polymorphic</tt> option is provided.  <tt>references</tt> and
-      # <tt>belongs_to</tt> are acceptable. The reference column will be an
-      # +integer+ by default, the <tt>:type</tt> option can be used to specify
-      # a different type. A foreign key will be created if a +foreign_key+
-      # option is passed.
+      # Adds a reference.
       #
       #  t.references(:user)
-      #  t.references(:user, type: "string")
-      #  t.belongs_to(:supplier, polymorphic: true)
+      #  t.belongs_to(:supplier, foreign_key: true)
       #
-      # See SchemaStatements#add_reference
+      # See SchemaStatements#add_reference for details of the options you can use.
       def references(*args)
         options = args.extract_options!
         polymorphic = options.delete(:polymorphic)
@@ -329,7 +324,10 @@ module ActiveRecord
           column("#{col}_id", type, options)
           column("#{col}_type", :string, polymorphic.is_a?(Hash) ? polymorphic : options) if polymorphic
           index(polymorphic ? %w(type id).map { |t| "#{col}_#{t}" } : "#{col}_id", index_options.is_a?(Hash) ? index_options : {}) if index_options
-          foreign_key(col.to_s.pluralize, foreign_key_options.is_a?(Hash) ? foreign_key_options : {}) if foreign_key_options
+          if foreign_key_options
+            to_table = Base.pluralize_table_names ? col.to_s.pluralize : col.to_s
+            foreign_key(to_table, foreign_key_options.is_a?(Hash) ? foreign_key_options : {})
+          end
         end
       end
       alias :belongs_to :references
@@ -535,18 +533,12 @@ module ActiveRecord
         @base.rename_column(name, column_name, new_column_name)
       end
 
-      # Adds a reference. Optionally adds a +type+ column, if
-      # <tt>:polymorphic</tt> option is provided.  <tt>references</tt> and
-      # <tt>belongs_to</tt> are acceptable. The reference column will be an
-      # +integer+ by default, the <tt>:type</tt> option can be used to specify
-      # a different type. A foreign key will be created if a +foreign_key+
-      # option is passed.
+      # Adds a reference.
       #
       #  t.references(:user)
-      #  t.references(:user, type: "string")
-      #  t.belongs_to(:supplier, polymorphic: true)
+      #  t.belongs_to(:supplier, foreign_key: true)
       #
-      # See SchemaStatements#add_reference
+      # See SchemaStatements#add_reference for details of the options you can use.
       def references(*args)
         options = args.extract_options!
         args.each do |ref_name|

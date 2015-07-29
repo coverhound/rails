@@ -530,6 +530,8 @@ module ActiveRecord
       #
       #   CREATE UNIQUE INDEX index_accounts_on_branch_id_and_party_id ON accounts(branch_id, party_id) WHERE active
       #
+      # Note: Partial indexes are only supported for PostgreSQL and SQLite 3.8.0+.
+      #
       # ====== Creating an index with a specific method
       #
       #   add_index(:developers, :name, using: 'btree')
@@ -621,10 +623,20 @@ module ActiveRecord
         indexes(table_name).detect { |i| i.name == index_name }
       end
 
-      # Adds a reference. Optionally adds a +type+ column, if <tt>:polymorphic</tt> option is provided.
-      # The reference column is an +integer+ by default, the <tt>:type</tt> option can be used to specify
-      # a different type.
+      # Adds a reference. The reference column is an integer by default,
+      # the <tt>:type</tt> option can be used to specify a different type.
+      # Optionally adds a +_type+ column, if <tt>:polymorphic</tt> option is provided.
       # <tt>add_reference</tt> and <tt>add_belongs_to</tt> are acceptable.
+      #
+      # The +options+ hash can include the following keys:
+      # [<tt>:type</tt>]
+      #   The reference column type. Defaults to +:integer+.
+      # [<tt>:index</tt>]
+      #   Add an appropriate index. Defaults to false.
+      # [<tt>:foreign_key</tt>]
+      #   Add an appropriate foreign key. Defaults to false.
+      # [<tt>:polymorphic</tt>]
+      #   Wether an additional +_type+ column should be added. Defaults to false.
       #
       # ====== Create a user_id integer column
       #
@@ -633,10 +645,6 @@ module ActiveRecord
       # ====== Create a user_id string column
       #
       #   add_reference(:products, :user, type: :string)
-      #
-      # ====== Create a supplier_id and supplier_type columns
-      #
-      #   add_belongs_to(:products, :supplier, polymorphic: true)
       #
       # ====== Create supplier_id, supplier_type columns and appropriate index
       #
@@ -655,7 +663,10 @@ module ActiveRecord
         add_column(table_name, "#{ref_name}_id", type, options)
         add_column(table_name, "#{ref_name}_type", :string, polymorphic.is_a?(Hash) ? polymorphic : options) if polymorphic
         add_index(table_name, polymorphic ? %w[type id].map{ |t| "#{ref_name}_#{t}" } : "#{ref_name}_id", index_options.is_a?(Hash) ? index_options : {}) if index_options
-        add_foreign_key(table_name, ref_name.to_s.pluralize, foreign_key_options.is_a?(Hash) ? foreign_key_options : {}) if foreign_key_options
+        if foreign_key_options
+          to_table = Base.pluralize_table_names ? ref_name.to_s.pluralize : ref_name
+          add_foreign_key(table_name, to_table, foreign_key_options.is_a?(Hash) ? foreign_key_options : {})
+        end
       end
       alias :add_belongs_to :add_reference
 
@@ -675,7 +686,10 @@ module ActiveRecord
       #   remove_reference(:products, :user, index: true, foreign_key: true)
       #
       def remove_reference(table_name, ref_name, options = {})
-        remove_foreign_key table_name, ref_name.to_s.pluralize if options[:foreign_key]
+        if options[:foreign_key]
+          to_table = Base.pluralize_table_names ? ref_name.to_s.pluralize : ref_name
+          remove_foreign_key(table_name, to_table)
+        end
 
         remove_column(table_name, "#{ref_name}_id")
         remove_column(table_name, "#{ref_name}_type") if options[:polymorphic]
@@ -692,8 +706,8 @@ module ActiveRecord
       # +to_table+ contains the referenced primary key.
       #
       # The foreign key will be named after the following pattern: <tt>fk_rails_<identifier></tt>.
-      # +identifier+ is a 10 character long random string. A custom name can be specified with
-      # the <tt>:name</tt> option.
+      # +identifier+ is a 10 character long string which is deterministically generated from the
+      # +from_table+ and +column+. A custom name can be specified with the <tt>:name</tt> option.
       #
       # ====== Creating a simple foreign key
       #
@@ -705,7 +719,7 @@ module ActiveRecord
       #
       # ====== Creating a foreign key on a specific column
       #
-      #   add_foreign_key :articles, :users, column: :author_id, primary_key: "lng_id"
+      #   add_foreign_key :articles, :users, column: :author_id, primary_key: :lng_id
       #
       # generates:
       #
@@ -874,7 +888,7 @@ module ActiveRecord
       #   add_timestamps(:suppliers, null: false)
       #
       def add_timestamps(table_name, options = {})
-        emit_warning_if_null_unspecified(options)
+        emit_warning_if_null_unspecified(:add_timestamps, options)
         add_column table_name, :created_at, :datetime, options
         add_column table_name, :updated_at, :datetime, options
       end

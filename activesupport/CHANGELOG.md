@@ -1,4 +1,30 @@
-## Rails 4.2.1 (March 19, 2014) ##
+## Rails 4.2.3 (June 25, 2015) ##
+
+*   Fix a range of values for parameters of the Time#change
+
+    *Nikolay Kondratyev*
+
+*   Add some missing `require 'active_support/deprecation'`
+
+    *Akira Matsuda*
+
+
+## Rails 4.2.2 (June 16, 2015) ##
+
+*   Fix XSS vulnerability in `ActiveSupport::JSON.encode` method.
+
+    CVE-2015-3226.
+
+    *Rafael Mendonça França*
+
+*   Fix denial of service vulnerability in the XML processing.
+
+    CVE-2015-3227.
+
+    *Aaron Patterson*
+
+
+## Rails 4.2.1 (March 19, 2015) ##
 
 *   Fixed a problem where String#truncate_words would get stuck with a complex
     string.

@@ -838,6 +838,20 @@ this gem such as `whitelist_attributes` or `mass_assignment_sanitizer` options.
 
 * To re-enable the old finders, you can use the [activerecord-deprecated_finders gem](https://github.com/rails/activerecord-deprecated_finders).
 
+* Rails 4.0 has changed to default join table for `has_and_belongs_to_many` relations to strip the common prefix off the second table name. Any existing `has_and_belongs_to_many` relationship between models with a common prefix must be specified with the `join_table` option. For example:
+
+```ruby
+CatalogCategory < ActiveRecord::Base
+  has_and_belongs_to_many :catalog_products, join_table: 'catalog_categories_catalog_products'
+end
+
+CatalogProduct < ActiveRecord::Base
+  has_and_belongs_to_many :catalog_categories, join_table: 'catalog_categories_catalog_products'
+end
+```
+
+* Note that the the prefix takes scopes into account as well, so relations between `Catalog::Category` and `Catalog::Product` or `Catalog::Category` and `CatalogProduct` need to be updated similarly.
+
 ### Active Resource
 
 Rails 4.0 extracted Active Resource to its own gem. If you still need the feature you can add the [Active Resource gem](https://github.com/rails/activeresource) in your Gemfile.
@@ -880,6 +894,8 @@ Please read [Pull Request #9978](https://github.com/rails/rails/pull/9978) for d
 * Rails 4.0 has removed Action and Page caching from Action Pack. You will need to add the `actionpack-action_caching` gem in order to use `caches_action` and the `actionpack-page_caching` to use `caches_pages` in your controllers.
 
 * Rails 4.0 has removed the XML parameters parser. You will need to add the `actionpack-xml_parser` gem if you require this feature.
+
+* Rails 4.0 changes the default `layout` lookup set using symbols or procs that return nil. To get the "no layout" behavior, return false instead of nil. 
 
 * Rails 4.0 changes the default memcached client from `memcache-client` to `dalli`. To upgrade, simply add `gem 'dalli'` to your `Gemfile`.
 

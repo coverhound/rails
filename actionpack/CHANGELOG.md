@@ -1,4 +1,51 @@
-## Rails 4.2.1 (March 19, 2014) ##
+## Rails 4.2.3 (June 25, 2015) ##
+
+*   Fix rake routes not showing the right format when
+    nesting multiple routes.
+
+    See #18373.
+
+    *Ravil Bayramgalin*
+
+*   Fix regression where a gzip file response would have a Content-type,
+    even when it was a 304 status code.
+
+    See #19271.
+
+    *Kohei Suzuki*
+
+*   Fix handling of empty X_FORWARDED_HOST header in raw_host_with_port
+
+    Previously, an empty X_FORWARDED_HOST header would cause
+    Actiondispatch::Http:URL.raw_host_with_port to return nil, causing
+    Actiondispatch::Http:URL.host to raise a NoMethodError.
+
+    *Adam Forsyth*
+
+*   Fallback to `ENV['RAILS_RELATIVE_URL_ROOT']` in `url_for`.
+
+    Fixed an issue where the `RAILS_RELATIVE_URL_ROOT` environment variable is not
+    prepended to the path when `url_for` is called. If `SCRIPT_NAME` (used by Rack)
+    is set, it takes precedence.
+
+    Fixes #5122.
+
+    *Yasyf Mohamedali*
+
+*   Fix regression in functional tests. Responses should have default headers
+    assigned.
+
+    See #18423.
+
+    *Jeremy Kemper*, *Yves Senn*
+
+
+## Rails 4.2.2 (June 16, 2015) ##
+
+* No Changes *
+
+
+## Rails 4.2.1 (March 19, 2015) ##
 
 *   Non-string authenticity tokens do not raise NoMethodError when decoding
     the masked token.

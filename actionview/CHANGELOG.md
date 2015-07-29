@@ -1,6 +1,43 @@
-## Rails 4.2.1 (March 19, 2014) ##
+## Rails 4.2.3 (June 25, 2015) ##
 
-*   Default translations that have a lower precidence than an html safe default,
+*   `translate` should handle `raise` flag correctly in case of both main and default
+    translation is missing.
+
+    Fixes #19967
+
+    *Bernard Potocki*
+
+*   `translate` allows `default: [[]]` again for a default value of `[]`.
+
+    Fixes #19640.
+
+    *Adam Prescott*
+
+*   `translate` should accept nils as members of the `:default`
+    parameter without raising a translation missing error.  Fixes a
+    regression introduced 362557e.
+
+    Fixes #19419
+
+    *Justin Coyne*
+
+
+*   `number_to_percentage` does not crash with `Float::NAN` or `Float::INFINITY`
+    as input when `precision: 0` is used.
+
+    Fixes #19227.
+
+    *Yves Senn*
+
+
+## Rails 4.2.2 (June 16, 2015) ##
+
+* No Changes *
+
+
+## Rails 4.2.1 (March 19, 2015) ##
+
+*   Default translations that have a lower precedence than an html safe default,
     but are not themselves safe, should not be marked as html_safe.
 
     *Justin Coyne*

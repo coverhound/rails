@@ -281,18 +281,22 @@ module ActiveRecord
       init_attributes(attributes, options) if attributes
 
       yield self if block_given?
-      _run_initialize_callbacks
+      run_callbacks :initialize
     end
 
-    # Initialize an empty model object from +coder+. +coder+ must contain
-    # the attributes necessary for initializing an empty model object. For
-    # example:
+    # Initialize an empty model object from +coder+. +coder+ should be
+    # the result of previously encoding an Active Record model, using
+    # `encode_with`
     #
     #   class Post < ActiveRecord::Base
     #   end
     #
+    #   old_post = Post.new(title: "hello world")
+    #   coder = {}
+    #   old_post.encode_with(coder)
+    #
     #   post = Post.allocate
-    #   post.init_with('attributes' => { 'title' => 'hello world' })
+    #   post.init_with(coder)
     #   post.title # => 'hello world'
     def init_with(coder)
       @attributes = coder['attributes']
@@ -303,8 +307,8 @@ module ActiveRecord
 
       self.class.define_attribute_methods
 
-      _run_find_callbacks
-      _run_initialize_callbacks
+      run_callbacks :find
+      run_callbacks :initialize
 
       self
     end
@@ -340,7 +344,7 @@ module ActiveRecord
       @attributes = @attributes.dup
       @attributes.reset(self.class.primary_key)
 
-      _run_initialize_callbacks
+      run_callbacks(:initialize)
 
       @aggregation_cache = {}
       @association_cache = {}
@@ -479,15 +483,15 @@ module ActiveRecord
       Hash[methods.map! { |method| [method, public_send(method)] }].with_indifferent_access
     end
 
+    private
+
     def set_transaction_state(state) # :nodoc:
       @transaction_state = state
     end
 
     def has_transactional_callbacks? # :nodoc:
-      !_rollback_callbacks.empty? || !_commit_callbacks.empty? || !_create_callbacks.empty?
+      !_rollback_callbacks.empty? || !_commit_callbacks.empty?
     end
-
-    private
 
     # Updates the attributes on this particular ActiveRecord object so that
     # if it is associated with a transaction, then the state of the AR object
@@ -511,6 +515,8 @@ module ActiveRecord
     end
 
     def update_attributes_from_transaction_state(transaction_state, depth)
+      @reflects_state = [false] if depth == 0
+
       if transaction_state && transaction_state.finalized? && !has_transactional_callbacks?
         unless @reflects_state[depth]
           restore_transaction_record_state if transaction_state.rolledback?
@@ -547,7 +553,6 @@ module ActiveRecord
       @txn                      = nil
       @_start_transaction_state = {}
       @transaction_state        = nil
-      @reflects_state           = [false]
     end
 
     def initialize_internals_callback
