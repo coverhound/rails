@@ -16,6 +16,9 @@ module ActiveJob
       # Queue in which the job will reside.
       attr_writer :queue_name
 
+      # I18n.locale to be used during the job.
+      attr_accessor :locale
+
       attr_accessor :provider_job_id
     end
 
@@ -28,6 +31,7 @@ module ActiveJob
         job.job_id               = job_data['job_id']
         job.queue_name           = job_data['queue_name']
         job.serialized_arguments = job_data['arguments']
+        job.locale               = job_data['locale'] || I18n.locale
         job
       end
 
@@ -67,7 +71,8 @@ module ActiveJob
         'job_class'  => self.class.name,
         'job_id'     => job_id,
         'queue_name' => queue_name,
-        'arguments'  => serialize_arguments(arguments)
+        'arguments'  => serialize_arguments(arguments),
+        'locale'     => I18n.locale
       }
     end
 
