@@ -18,10 +18,9 @@ module ActiveRecord
   #   conversation.archived? # => true
   #   conversation.status    # => "archived"
   #
-  #   # conversation.update! status: 1
+  #   # conversation.status = 1
   #   conversation.status = "archived"
   #
-  #   # conversation.update! status: nil
   #   conversation.status = nil
   #   conversation.status.nil? # => true
   #   conversation.status      # => nil
@@ -70,7 +69,7 @@ module ActiveRecord
   # Where conditions on an enum attribute must use the ordinal value of an enum.
   module Enum
     def self.extended(base) # :nodoc:
-      base.class_attribute(:defined_enums)
+      base.class_attribute(:defined_enums, instance_writer: false)
       base.defined_enums = {}
     end
 

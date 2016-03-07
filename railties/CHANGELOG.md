@@ -1,3 +1,21 @@
+## Rails 4.2.5.2 (February 26, 2016) ##
+
+*   No changes.
+
+
+## Rails 4.2.5.1 (January 25, 2015) ##
+
+*   No changes.
+
+
+## Rails 4.2.5 (November 12, 2015) ##
+
+*   Fix displaying mailer previews on non local requests when config
+    `action_mailer.show_previews` is set
+
+    *Wojciech Wnętrzak*
+
+
 ## Rails 4.2.4 (August 24, 2015) ##
 
 *   Fix STATS_DIRECTORIES already defined warning when running rake from within

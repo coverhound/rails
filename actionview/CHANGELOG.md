@@ -1,3 +1,31 @@
+## Rails 4.2.5.2 (February 26, 2016) ##
+
+*   Do not allow render with unpermitted parameter.
+
+    Fixes CVE-2016-2098.
+
+    *Arthur Neves*
+
+
+## Rails 4.2.5.1 (January 25, 2015) ##
+
+*   Adds boolean argument outside_app_allowed to `ActionView::Resolver#find_templates`
+    method.
+
+    *Aaron Patterson*
+
+
+## Rails 4.2.5 (November 12, 2015) ##
+
+*   Fix `mail_to` when called with `nil` as argument.
+
+    *Rafael Mendonça França*
+
+*   `url_for` does not modify its arguments when generating polymorphic URLs.
+
+    *Bernerd Schaefer*
+
+
 ## Rails 4.2.4 (August 24, 2015) ##
 
 * No Changes *
