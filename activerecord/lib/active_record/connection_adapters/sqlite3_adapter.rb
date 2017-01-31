@@ -74,18 +74,6 @@ module ActiveRecord
         boolean:      { name: "boolean" }
       }
 
-      class Version
-        include Comparable
-
-        def initialize(version_string)
-          @version = version_string.split('.').map { |v| v.to_i }
-        end
-
-        def <=>(version_string)
-          @version <=> version_string.split('.').map { |v| v.to_i }
-        end
-      end
-
       class StatementPool < ConnectionAdapters::StatementPool
         def initialize(connection, max)
           super
@@ -375,10 +363,12 @@ module ActiveRecord
           row['name']
         end
       end
+      alias data_sources tables
 
       def table_exists?(table_name)
         table_name && tables(nil, table_name).any?
       end
+      alias data_source_exists? table_exists?
 
       # Returns an array of +Column+ objects for the table specified by +table_name+.
       def columns(table_name) #:nodoc:

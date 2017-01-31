@@ -27,6 +27,9 @@ gem 'bcrypt', '~> 3.1.10', require: false
 # it being automatically loaded by sprockets
 gem 'uglifier', '>= 1.3.0', require: false
 
+# mime-types 3 only support ruby >= 2
+gem 'mime-types', '< 3', require: false
+
 group :doc do
   gem 'sdoc', '~> 0.4.0'
   gem 'redcarpet', '~> 3.1.2', platforms: :ruby
@@ -43,7 +46,7 @@ group :job do
   gem 'resque', require: false
   gem 'resque-scheduler', require: false
   gem 'sidekiq', require: false
-  gem 'sucker_punch', require: false
+  gem 'sucker_punch', '< 2.0', require: false
   gem 'delayed_job', require: false
   gem 'queue_classic', require: false, platforms: :ruby
   gem 'sneakers', '0.1.1.pre', require: false
@@ -72,7 +75,7 @@ group :test do
   #   gem 'debugger'
   # end
 
-  platforms :mri do
+  platforms :mri_21 do
     gem 'stackprof'
   end
 

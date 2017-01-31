@@ -1,3 +1,16 @@
+## Rails 4.2.7 (July 12, 2016) ##
+
+*   Removes `-t` from default Sendmail arguments to match the underlying
+    `Mail::Sendmail` setting.
+
+    *Clayton Liggitt*
+
+
+## Rails 4.2.6 (March 07, 2016) ##
+
+*   No changes.
+
+
 ## Rails 4.2.5.2 (February 26, 2016) ##
 
 *   No changes.
