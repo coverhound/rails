@@ -1,3 +1,34 @@
+## Rails 4.2.8 (February 21, 2017) ##
+
+*   Using a mysql2 connection after it fails to reconnect will now have an error message
+    saying the connection is closed rather than an undefined method error message.
+
+    *Dylan Thacker-Smith*
+
+*   Bust Model.attribute_names cache when resetting column information
+
+    *James Coleman*
+
+*   Fix query caching when type information is reset
+
+    Backports ancillary fix in 5.0.
+
+    *James Coleman*
+
+*   Allow `joins` to be unscoped.
+
+    Fixes #13775.
+
+    *Takashi Kokubun*
+
+*   Hashes can once again be passed to setters of `composed_of`, if all of the
+    mapping methods are methods implemented on `Hash`.
+
+    Fixes #25978.
+
+    *Sean Griffin*
+
+
 ## Rails 4.2.7 (July 12, 2016) ##
 
 *   Inspecting an object with an associated array of over 10 elements no longer
