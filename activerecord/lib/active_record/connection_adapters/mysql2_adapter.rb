@@ -1,6 +1,6 @@
 require 'active_record/connection_adapters/abstract_mysql_adapter'
 
-gem 'mysql2', '>= 0.3.13', '< 0.5'
+gem 'mysql2', '>= 0.3.13', '< 0.6.0'
 require 'mysql2'
 
 module ActiveRecord
@@ -72,14 +72,6 @@ module ActiveRecord
 
       def quote_string(string)
         @connection.escape(string)
-      end
-
-      def quoted_date(value)
-        if supports_datetime_with_precision? && value.acts_like?(:time) && value.respond_to?(:usec)
-          "#{super}.#{sprintf("%06d", value.usec)}"
-        else
-          super
-        end
       end
 
       #--

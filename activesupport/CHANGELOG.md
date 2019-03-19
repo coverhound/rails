@@ -1,3 +1,54 @@
+## Rails 4.2.11.1 (March 11, 2019) ##
+
+*   No changes.
+
+
+## Rails 4.2.11 (November 27, 2018) ##
+
+*   No changes.
+
+
+## Rails 4.2.10 (September 27, 2017) ##
+
+*   No changes.
+
+
+## Rails 4.2.9 (June 26, 2017) ##
+
+*   Fixed bug in `DateAndTime::Compatibility#to_time` that caused it to
+    raise `RuntimeError: can't modify frozen Time` when called on any frozen `Time`.
+    Properly pass through the frozen `Time` or `ActiveSupport::TimeWithZone` object
+    when calling `#to_time`.
+
+    *Kevin McPhillips* & *Andrew White*
+
+*   Restore the return type of `DateTime#utc`
+
+    In Rails 5.0 the return type of `DateTime#utc` was changed to `Time` to be
+    consistent with the new `DateTime#localtime` method. When these changes were
+    backported in #27553 this inadvertently changed the return type in a patcn
+    release. Since `DateTime#localtime` was new in Rails 4.2.8 it's okay to
+    restore the return type of `DateTime#utc` but keep `DateTime#localtime` as
+    returning `Time` without breaking backwards compatibility.
+
+    *Andrew White*
+
+*   In Core Extensions, make `MarshalWithAutoloading#load` pass through the second, optional
+    argument for `Marshal#load( source [, proc] )`. This way we don't have to do
+    `Marshal.method(:load).super_method.call(sourse, proc)` just to be able to pass a proc.
+
+    *Jeff Latz*
+
+*   Cache `ActiveSupport::TimeWithZone#to_datetime` before freezing.
+
+    *Adam Rice*
+
+*   `AS::Testing::TimeHelpers#travel_to` now changes `DateTime.now` as well as
+    `Time.now` and `Date.today`.
+
+    *Yuki Nishijima*
+
+
 ## Rails 4.2.8 (February 21, 2017) ##
 
 *   Make `getlocal` and `getutc` always return instances of `Time` for

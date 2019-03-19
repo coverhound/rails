@@ -1,3 +1,23 @@
+## Rails 4.2.11.1 (March 11, 2019) ##
+
+*   No changes.
+
+
+## Rails 4.2.11 (November 27, 2018) ##
+
+*   No changes.
+
+
+## Rails 4.2.10 (September 27, 2017) ##
+
+*   No changes.
+
+
+## Rails 4.2.9 (June 26, 2017) ##
+
+*   No changes.
+
+
 ## Rails 4.2.8 (February 21, 2017) ##
 
 *   Add `config/initializers/to_time_preserves_timezone.rb`, which tells
